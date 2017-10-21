@@ -15,21 +15,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
   author: tyrolyean
-  This file may be used to store globally used data and preprocessor
-  definitions in order to have a central place for those.
+  The command handler is used to parse user input into usable things such as
+  configuration or method calls... I dunno yet
 */
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef COMMANDHANDLER_H
+#define COMMANDHANDLER_H
 
-#define DATA_SEPARATOR '\u001f'
-
-#define DEFAULT_SOCKET_LOCATION "./"
-
-/*  This is the definition of the status codes used in the protocol.
-    All codes may be used as appropriately.
-    BREACH may only be used in case of a security breach or worse...*/
-enum status : unsigned short int {SYSTEM_COMMAND = 0, USER_COMMAND,
-  SYSTEM_MESSAGE,BROADCAST_MESSAGE, USER_MESSAGE, BREACH};
-
-#endif /* DATA_H */
+#endif /* COMMANDHANDLER_H */

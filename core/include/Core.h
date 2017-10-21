@@ -15,21 +15,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
   author: tyrolyean
-  This file may be used to store globally used data and preprocessor
-  definitions in order to have a central place for those.
+  This class will be used to run the feakin module?
 */
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef CORE_H
+#define CORE_H
 
-#define DATA_SEPARATOR '\u001f'
+#include <vector>
 
-#define DEFAULT_SOCKET_LOCATION "./"
+struct core_status{
+  int exit_code;
+  bool shutting_down;
+  long long int uptime;
+};
 
-/*  This is the definition of the status codes used in the protocol.
-    All codes may be used as appropriately.
-    BREACH may only be used in case of a security breach or worse...*/
-enum status : unsigned short int {SYSTEM_COMMAND = 0, USER_COMMAND,
-  SYSTEM_MESSAGE,BROADCAST_MESSAGE, USER_MESSAGE, BREACH};
+class Core{
 
-#endif /* DATA_H */
+public:
+  Core(int argc, char** argv);
+  Core();
+
+  bool startup();
+  core_status get_status();
+  void wait_for_shutdown();
+  void shutdown(int code);
+
+private:
+  int argc;
+  char** argv;
+
+  int exit_code;
+  bool shutting_down;
+  long long int startup_time;
+
+  static void signal_handler(int signal);
+  static std::vector<Core*> cores;
+
+
+};
+
+#endif /* CORE_H */
