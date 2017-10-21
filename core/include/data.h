@@ -11,26 +11,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-/*
- * Author: tyrolyean
- */
+#ifndef DATA_H
+#define DATA_H
 
-#include <cstdlib>
-#include <iostream>
+#define DATA_SEPARATOR '\u001f'
 
-#include "data.h"
-
-using namespace std;
-
-int main(int argc, char** argv) {
-
-  std::cout << "Starting core module..." << std::endl;
-  std::cout << "Using character as separator: " << DATA_SEPARATOR << std::endl;
-
-  int exit_code = 0;
-
-  return exit_code;
-
-}
+#endif
