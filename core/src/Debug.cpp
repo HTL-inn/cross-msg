@@ -35,14 +35,22 @@
  * it often occured, that messages were just printed into eachother...
  */
 bool Debug::output_lock = false;
+// The debug output threshold
+unsigned short int Debug::debug_threshold = debug_type::INFO;
 
 void Debug::println(std::string output, unsigned short int code){
 
+    if(code < debug_threshold){
+      // Ignore everything under the threshold
+      return;
+    }
     std::string out = generate_prefix(code);
     out.append(output);
     Debug::output(out);
     return;
 }
+
+
 
 std::string Debug::generate_prefix(unsigned short int code){
 
@@ -55,7 +63,7 @@ std::string Debug::generate_prefix(unsigned short int code){
             break;
 
         case debug_type::INFO :
-            prefix = prefix + COLOR_GREEN +"information   "+COLOR_RESET+"] ";
+            prefix = prefix + COLOR_GREEN +"information\t    "+COLOR_RESET+"] ";
             break;
         case debug_type::WARNING :
             prefix = prefix + COLOR_YELLOW +"warning\t    "+COLOR_RESET+"] ";
@@ -64,10 +72,10 @@ std::string Debug::generate_prefix(unsigned short int code){
             prefix = prefix + COLOR_RED +"error\t    "+COLOR_RESET+"] ";
             break;
         case debug_type::CRITICAL_ERROR :
-            prefix = prefix + COLOR_BOLDRED +"critical error"+COLOR_RESET+"] ";
+            prefix = prefix + COLOR_BOLDRED +"critical error     "+COLOR_RESET+"] ";
             break;
         case debug_type::END_CALL :
-            prefix = prefix + COLOR_BOLDBLUE +"end call\t    "+COLOR_RESET+"] ";
+            prefix = prefix + COLOR_BOLDBLUE +"end call\t      "+COLOR_RESET+"] ";
             break;
         case debug_type::PENETRATION :
             prefix = prefix + COLOR_BOLDBLACK +"penetration   "+COLOR_RESET+"] ";

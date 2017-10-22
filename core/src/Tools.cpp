@@ -116,6 +116,11 @@ bool Tools::check_for_directory(std::string dir) {
 
 }
 
+bool Tools::check_for_file(const std::string& file){
+  struct stat buffer;
+  return (stat (file.c_str(), &buffer) == 0); 
+}
+
 //
 // Time related functions.
 //

@@ -1,5 +1,6 @@
 # I'm using the g++ and not the llvm c compiler... I'm sorry
-CC_FLAGS = -Wall -Iinclude -lpthread
+CC_FLAGS = -Wall -Iinclude
+LINK_FLAGS = -pthread
 
 # Environment
 SHELL=/bin/sh
@@ -29,7 +30,7 @@ OBJECTS = $(OBJECTS_TMP:$(SOURCEDIR)%=$(BUILDDIR)%)
 
 # Main target
 $(EXEC): $(OBJECTS)
-	$(CCC) $(OBJECTS) -o $(EXEC)
+	$(CCC) $(OBJECTS) $(LINK_FLAGS) -o $(EXEC)
 
 
 

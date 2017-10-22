@@ -11,25 +11,32 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 /*
-  author: tyrolyean
-  This file may be used to store globally used data and preprocessor
-  definitions in order to have a central place for those.
-*/
+ * Author: tyrolyean
+ *
+ * The class for a module.
+ */
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef MODULE_H
+#define MODULE_H
 
-#define DATA_SEPARATOR '\u001f'
+#include <string>
 
-#define DEFAULT_SOCKET_LOCATION "./"
+#include "json.hpp"
 
-/*  This is the definition of the status codes used in the protocol.
-    All codes may be used as appropriately.
-    BREACH may only be used in case of a security breach or worse...*/
-enum status : unsigned short int {CONFIGURATION = 0,SYSTEM_COMMAND, USER_COMMAND,
-  SYSTEM_MESSAGE, USER_MESSAGE, BREACH};
+class Module{
+public:
+  Module(nlohmann::json config, std::string socket_dir);
 
-#endif /* DATA_H */
+  void start();
+  void stop();
+
+private:
+  nlohmann::json config;
+  // The socket path is NOT the socket directory! It is the socket itself!
+  std::string socket_path;
+};
+
+#endif /* MODULE_H */

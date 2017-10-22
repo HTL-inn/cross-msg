@@ -2,4 +2,5 @@
 
 make clean
 make
-./core
+echo ""
+./core -D 0

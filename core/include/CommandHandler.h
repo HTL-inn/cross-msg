@@ -22,4 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMANDHANDLER_H
 #define COMMANDHANDLER_H
 
+class CommandHandler{
+
+public:
+
+  
+
+private:
+
+};
+
 #endif /* COMMANDHANDLER_H */

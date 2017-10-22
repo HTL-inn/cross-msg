@@ -39,13 +39,12 @@ public:
     static bool overwrite_file(std::string file, std::string line);
     static std::string read_file(std::string file);
     static bool check_for_directory(std::string dir);
+    static bool check_for_file(const std::string& file);
     static void wait_milliseconds(int milliseconds);
     static long long int get_unix_time_millis();
     static std::string to_upper_case(std::string in);
     static std::string to_lower_case(std::string in);
     static std::vector<std::string> split_by_string(std::string delimiter, std::string input);
-
-private:
 
 };
 

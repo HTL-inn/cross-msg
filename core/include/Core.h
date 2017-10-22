@@ -22,10 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CORE_H
 
 #include <vector>
+#include <string>
+
+#include "Module.h"
 
 struct core_status{
   int exit_code;
   bool shutting_down;
+  bool shut_down;
   long long int uptime;
 };
 
@@ -38,7 +42,7 @@ public:
   bool startup();
   core_status get_status();
   void wait_for_shutdown();
-  void shutdown(int code);
+  void async_shutdown(int code);
 
 private:
   int argc;
@@ -46,11 +50,19 @@ private:
 
   int exit_code;
   bool shutting_down;
+  bool shut_down;
   long long int startup_time;
+
+  std::vector<Module*> modules;
+  std::string socket_dir;
 
   static void signal_handler(int signal);
   static std::vector<Core*> cores;
 
+  bool daemon;
+  std::string config_file;
+
+  void shutdown();
 
 };
 

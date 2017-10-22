@@ -15,19 +15,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
  * Author: tyrolyean
+ *
+ * The class for a module.
  */
 
-#include <cstdlib>
-#include <iostream>
+#include "Module.h"
+#include "Debug.h"
 
-using namespace std;
+Module::Module(nlohmann::json config, std::string socket_dir){
+  this->config = config;
+  std::string mod_name = this->config["title"];
 
-int main(int argc, char** argv) {
+  this->socket_path = socket_dir + mod_name;
 
-  std::cout << "Starting core module..." << std::endl;
+  return;
+}
 
-  int exit_code = 0;
+void Module::start(){
+  std::string mod_name = this->config["title"];
+  Debug::println("starting module --> " + mod_name,debug_type::INTERNAL);
 
-  return exit_code;
+  return;
+}
 
+void Module::stop(){
+  std::string mod_name = this->config["title"];
+  Debug::println("stopping module --> " + mod_name,debug_type::INTERNAL);
+
+  return;
 }
