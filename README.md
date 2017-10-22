@@ -31,10 +31,15 @@ The Terminator char has to be filtered out of messages by the client.
 The message types are:
 
 0 --> Configuration   e.g. the to be connected server
+
 1 --> User command    e.g. a ban or kick
+
 2 --> System message  e.g. a broadcast message
+
 3 --> User message    e.g. "Hello" or "How are you"
+
 4 --> Breach          e.g. a f*cking idiot who tried to send a Terminator char
+
 
 The message structure may vary between each message type.
 For further details please refere to either the source code or a documentation.
