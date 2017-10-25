@@ -9,7 +9,7 @@ This protocol is transmitted via a unix-socket.
 
 The sockets are located in a directory specified in the config file or
 default in `./sockets/` relative to the core module and destroyed on program
-start and end. The full socket dir is passed on startup to every module using the
+start and end. The full socket path is passed on startup to every module using the
 -s parameter.
 
 A typical protocol message to and from the server is structured like this:
