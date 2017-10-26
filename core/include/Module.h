@@ -16,13 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
  * Author: tyrolyean
  *
- * The class for a module.
+ * The class for a module. Rather simple ain't it?
  */
 
 #ifndef MODULE_H
 #define MODULE_H
 
 #include <string>
+#include <sys/types.h>
 
 #include "json.hpp"
 
@@ -34,9 +35,16 @@ public:
   void stop();
 
 private:
+
+  void handle();
+
   nlohmann::json config;
   // The socket path is NOT the socket directory! It is the socket itself!
   std::string socket_path;
+
+  pid_t child;
+  bool started;
+
 };
 
 #endif /* MODULE_H */

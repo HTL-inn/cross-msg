@@ -121,6 +121,7 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
           return false;
       }
   }
+
   //
   // DEBUG OUTPUT
   //
@@ -128,7 +129,6 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
   Debug::println("Program started in directory: " + Tools::from_c_str(get_current_dir_name()) ,debug_type::INTERNAL);
 
   Debug::println("using character as separator: 0x" + Tools::int_to_hex_str(DATA_SEPARATOR) ,debug_type::INTERNAL);
-
 
   //
   // Real init
@@ -173,6 +173,7 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
                    std::istreambuf_iterator<char>());
 
   nlohmann::json config;
+
   try{
     config = nlohmann::json::parse(config_raw);
   }catch(std::exception& e){

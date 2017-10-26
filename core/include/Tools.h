@@ -44,7 +44,7 @@ public:
     static long long int get_unix_time_millis();
     static std::string to_upper_case(std::string in);
     static std::string to_lower_case(std::string in);
-    static std::vector<std::string> split_by_string(std::string delimiter, std::string input);
+    static std::vector<std::string> split_by_string(char delimiter, std::string input);
 
 };
 

@@ -69,13 +69,13 @@ std::string Debug::generate_prefix(unsigned short int code){
             prefix = prefix + COLOR_YELLOW +"warning\t    "+COLOR_RESET+"] ";
             break;
         case debug_type::ERROR :
-            prefix = prefix + COLOR_RED +"error\t    "+COLOR_RESET+"] ";
+            prefix = prefix + COLOR_RED +"error\t\t    "+COLOR_RESET+"] ";
             break;
         case debug_type::CRITICAL_ERROR :
             prefix = prefix + COLOR_BOLDRED +"critical error     "+COLOR_RESET+"] ";
             break;
         case debug_type::END_CALL :
-            prefix = prefix + COLOR_BOLDBLUE +"end call\t      "+COLOR_RESET+"] ";
+            prefix = prefix + COLOR_BOLDBLUE +"end call\t    "+COLOR_RESET+"] ";
             break;
         case debug_type::PENETRATION :
             prefix = prefix + COLOR_BOLDBLACK +"penetration   "+COLOR_RESET+"] ";
