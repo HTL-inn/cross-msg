@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <iterator>
 #include <numeric>
 #include <thread>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include "Module.h"
 #include "Debug.h"
@@ -91,64 +93,45 @@ void Module::start(){
     args.push_back("-s");
     args.push_back(this->socket_path);
 
-    std::vector<char*> argv;
+    char *cmdln[args.size()+1];
 
-    for(unsigned int i = 0; i < args.size();i++){
+    for(unsigned int i = 0; i < args.size(); i++){
 
-      std::vector<char> cstr(args[i].c_str(), args[i].c_str() + args[i].size() + 1);
-      argv.push_back(&cstr[0]);
+      char* tmp = (char*) malloc(args[i].length()+1);
+      bzero(tmp, args[i].length()+1);
+      std::copy(args[i].begin(), args[i].end(), tmp);
+      cmdln[i] = tmp;
+
     }
 
-    argv.push_back(NULL);
 
-    char **cmdln = &argv[0];
+    cmdln[args.size()] = NULL;
+
+    int n;
 
     try{
-      execvp(cmdln[0], cmdln);
+      // Handing over to subprocess
+
+      n = execvp(cmdln[0], (char* const*) &cmdln);
     }catch(std::exception& e){
       Debug::println("Failed to start module with command --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
     }
 
     this->started = false;
-    Debug::println("child process of module --> " + mod_name, debug_type::INTERNAL);
+    Debug::println("child process ended with code "+std::to_string(n)+" --> " + mod_name, debug_type::INTERNAL);
 
     exit(0);
 
   }else{
     // I am a parent
     // Hi
-    Debug::println("master process signing off --> " + mod_name,debug_type::INTERNAL);
 
     this->started = true;
 
     // Start looping around
-    Debug::println("Waiting for module to open socket --> " + mod_name,debug_type::INTERNAL);
-    for(int j = 0; ((j < 6) && !Tools::check_for_file(this->socket_path));j++){
-
-      // I'm loopin!
-      for(int i = 0; ((i < 6) && !Tools::check_for_file(this->socket_path));i++){
-
-        // Still loopin
-        Tools::wait_milliseconds(10);
-      }
-
-      if(!Tools::check_for_file(this->socket_path)){
-        Debug::println("Child missing target! --> " + mod_name, debug_type::WARNING);
-      }
-      Tools::wait_milliseconds(100);
-    }
-
-    if(!Tools::check_for_file(this->socket_path)){
-      Debug::println("Failed to start child!! --> " + mod_name, debug_type::ERROR);
-      kill(this->child, SIGKILL);
-      this->started = false;
-      return;
-    }else{
-      std::thread tmp(&Module::handle, this);
-      tmp.detach();
-      // Started module, now I'm going on
-    }
-
+    std::thread tmp(&Module::handle, this);
+    tmp.detach();
+    Debug::println("master handing over to new thread --> " + mod_name,debug_type::INTERNAL);
 
   }
 
@@ -182,11 +165,46 @@ void Module::stop(){
 void Module::handle(){
 
   std::string mod_name = this->config["title"];
+
+  for(int i = 0; ((i < 500) && !Tools::check_for_file(this->socket_path));i++){
+    Tools::wait_milliseconds(100);
+    // 50 seconds enough to open a socket?
+  }
+
+    // Open Socket and initialize module by writing it's config
+
+  if ( (this->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    Debug::println("failed to get socket --> " + mod_name, debug_type::ERROR);
+    this->stop();
+  }
+
+  struct sockaddr_un addr;
+  memset(&addr, 0, sizeof(addr));
+
+
+
+  std::string mod_name = this->config["title"];
   Debug::println("module entering regular operation --> " + mod_name,debug_type::INTERNAL);
 
-  while(kill(this->child, 0) == 0){
+  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
     // Handle input from the unix socket... I should start to implement things..
 
   }
 
+  Debug::println("Module leaving regular operation --> " + mod_name,debug_type::INTERNAL);
+
+}
+
+void Module::listen(){
+
+  std::string mod_name = this->config["title"];
+  Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
+
+  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
+    // Handle input from the unix socket... I should start to implement things..
+
+  }
+
+  Debug::println("listener stopped --> " + mod_name,debug_type::INTERNAL);
+  return;
 }

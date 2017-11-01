@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
   }
   Tools::wait_milliseconds(10);
 
+  // maybe? please?
   if(c.get_status().shut_down){
     i = 0;
   }

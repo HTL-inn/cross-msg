@@ -43,6 +43,7 @@ private:
   std::string socket_path;
 
   pid_t child;
+  int sockfd;
   bool started;
 
 };
