@@ -118,7 +118,7 @@ bool Tools::check_for_directory(std::string dir) {
 
 bool Tools::check_for_file(const std::string& file){
   struct stat buffer;
-  return (stat (file.c_str(), &buffer) == 0); 
+  return (stat (file.c_str(), &buffer) == 0);
 }
 
 //
@@ -168,21 +168,14 @@ std::string Tools::to_lower_case(std::string in) {
     return in;
 }
 
-std::vector<std::string> Tools::split_by_string(std::string delimiter, std::string input) {
-    std::vector<std::string> output;
-    size_t pos = 0;
-    std::string token;
-    while ((pos = input.find(delimiter)) != std::string::npos) {
-        token = input.substr(0, pos);
-        token.erase(std::find_if(token.rbegin(), token.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), token.end());
-        output.push_back(token);
+std::vector<std::string> Tools::split_by_string(char delimiter, std::string input) {
+  std::stringstream test(input);
+  std::string segment;
+  std::vector<std::string> seglist;
 
-        input.erase(0, pos + delimiter.length());
-
-
-    }
-
-    input.erase(std::find_if(input.rbegin(), input.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), input.end());
-    output.push_back(input);
-    return output;
+  while(std::getline(test, segment, delimiter))
+  {
+    seglist.push_back(segment);
+  }
+  return seglist;
 }
