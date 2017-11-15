@@ -26,10 +26,10 @@ void unix_socket_create(){
         socket_main_addr.sun_family = AF_UNIX;
 
         /*copy the socket address to the socket*/
-        strcpy(socket_main_addr.sun_path, socket_main_path);
+        strcpy(socket_main_addr.sun_path, socket_main_path.c_str());
 
         /*unlink old socket if it exists*/
-        unlink(socket_main_path);
+        unlink(socket_main_path.c_str());
 
         /*create socket*/
         socket_main = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -45,7 +45,7 @@ void unix_socket_create(){
                              sizeof(socket_main_addr)); // check for error
 
         /*chmod so that everyone can access it*/
-        chmod(socket_main_path, 0777);
+        chmod(socket_main_path.c_str(), 0777);
 
         /*listen socket*/
         int sock_listen = listen(socket_main, 1);
@@ -64,7 +64,7 @@ void unix_socket_close(){
         close(socket_main);
 
         /*unlink unix-socket file*/
-        unlink(socket_main_path);
+        unlink(socket_main_path.c_str());
 }
 
 
@@ -74,11 +74,13 @@ void unix_socket_write(const char message[]){
 
 
 void unix_com_handle(){
-        int size;
         char buf[64];
+        int size;
+        while(size = read(client_sock, &buf, sizeof(buf))){
+                std::cout << buf;
 
-        while(read(client_sock, &buf, 64) > 0){
-                cout << buf << endl;
+
+                bzero(&buf, sizeof(buf));
         }
 }
 
