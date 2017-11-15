@@ -11,7 +11,7 @@
 
 using namespace std;
 
-char socket_main_path[] = "./test";
+std::string socket_main_path;
 int socket_main;
 int client_sock;
 struct sockaddr_un socket_main_addr;
@@ -73,6 +73,16 @@ void unix_socket_write(const char message[]){
 }
 
 
+void unix_com_handle(){
+        int size;
+        char buf[64];
+
+        while(read(client_sock, &buf, 64) > 0){
+                cout << buf << endl;
+        }
+}
+
+
 int main(int argc, char* argv[]) {
         if(argc < 3){
                 string s1 = "Missing start parameter\n\n";
@@ -85,11 +95,17 @@ int main(int argc, char* argv[]) {
 
         if(std::string(argv[1]) == "-s"){
                 //socket_main_path = argv[2];
-                cout << std::string(argv[2]) << endl;
+                socket_main_path = std::string(argv[2]);
         }
 
         unix_socket_create();
+<<<<<<< HEAD
+        unix_socket_write("Mamma hab mich lieb!\n\r");
+        unix_com_handle();
+        unix_socket_close();
+=======
         unix_socket_write("Test\n\r");
         //unix_socket_close();
+>>>>>>> refs/remotes/origin/master
    return 0;
 }
