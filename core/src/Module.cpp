@@ -34,8 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Debug.h"
 #include "Tools.h"
 
-Module::Module(nlohmann::json config, std::string socket_dir){
+Module::Module(nlohmann::json config, std::string socket_dir, std::stringstream* out){
   this->config = config;
+  this->output = out;
   std::string mod_name = this->config["title"];
 
   try{
@@ -163,10 +164,10 @@ void Module::stop(){
 }
 
 void Module::handle(){
-
+	
   std::string mod_name = this->config["title"];
 
-  for(int i = 0; ((i < 500) && !Tools::check_for_file(this->socket_path));i++){
+  for(int i = 0; ((i < 500) && Tools::check_for_file(this->socket_path));i++){
     Tools::wait_milliseconds(100);
     // 50 seconds enough to open a socket?
   }
@@ -181,14 +182,18 @@ void Module::handle(){
   struct sockaddr_un addr;
   memset(&addr, 0, sizeof(addr));
 
+  addr.sun_family = AF_UNIX;
+  if(true){
+	
+  }
 
-
-  std::string mod_name = this->config["title"];
   Debug::println("module entering regular operation --> " + mod_name,debug_type::INTERNAL);
+  std::thread tmpthr(&Module::listen,this);
+  tmpthr.detach();
 
-  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
+  while((kill(this->child, 0) == 0) this-> /*&& !this->core->get_status().shutting_down*/){
     // Handle input from the unix socket... I should start to implement things..
-
+	
   }
 
   Debug::println("Module leaving regular operation --> " + mod_name,debug_type::INTERNAL);
@@ -200,11 +205,18 @@ void Module::listen(){
   std::string mod_name = this->config["title"];
   Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
 
-  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
-    // Handle input from the unix socket... I should start to implement things..
+  char buf;
+  std::string buffer;
+  int rc;
+  std::stringstream streeeeeaaam;
 
+  while((kill(this->child, 0) == 0) && (rc=ead(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
+      // Handle input from the unix socket...
+      *this->output << buf;
+      std::cout << buf;
   }
 
   Debug::println("listener stopped --> " + mod_name,debug_type::INTERNAL);
   return;
 }
+

@@ -24,19 +24,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <sys/types.h>
+#include <iostream>
 
 #include "json.hpp"
 
 class Module{
 public:
-  Module(nlohmann::json config, std::string socket_dir);
+  Module(nlohmann::json config, std::string socket_dir, std::stringstream* out);
 
   void start();
   void stop();
 
+  std::stringstream input;
+  std::stringstream* output;
 private:
 
   void handle();
+  void listen();
 
   nlohmann::json config;
   // The socket path is NOT the socket directory! It is the socket itself!

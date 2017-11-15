@@ -22,9 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DATA_H
 #define DATA_H
 
+#define LINE_SEPARATOR '\u0004'
 #define DATA_SEPARATOR '\u001f'
-
-#define DEFAULT_SOCKET_LOCATION "./"
 
 /*  This is the definition of the status codes used in the protocol.
     All codes may be used as appropriately.

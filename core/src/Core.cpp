@@ -134,6 +134,11 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
   // Real init
   //
 
+  // Init the handler of all messages!!
+  std::thread handlerioo(&Core::distributor, this);
+  handlerioo.detach();
+
+  // Parse the config
   if(this->config_file == ""){
     //  no config file has been set
     if(Tools::check_for_file(Tools::from_c_str(get_current_dir_name()) + "/config.json")){
@@ -166,6 +171,7 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
     }
 
   }
+  
   Debug::println("Using " + this->config_file +" as config file", debug_type::INTERNAL);
 
   std::ifstream config_stream(this->config_file);
@@ -221,7 +227,7 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
     std::string mod_name = module["title"];
     Debug::println( "initializing module --> " + mod_name, debug_type::INTERNAL);
 
-    Module* mod = new Module(module,this->socket_dir);
+    Module* mod = new Module(module,this->socket_dir,&this->dist_stream);
 
     this->modules.push_back(mod);
 
@@ -260,6 +266,43 @@ void Core::async_shutdown(int code){
   tmp.detach();
 
   return;
+}
+
+void Core::distributor(){
+
+	std::string line;
+
+	while(!this->shutting_down && getline(this->dist_stream ,line ,LINE_SEPARATOR)){
+		std::vector<std::string> splitted = Tools::split_by_string(DATA_SEPARATOR,line);
+		int code = 0;
+		try{
+			code = std::stoi(splitted[0]);
+		}catch(std::exception& e){
+			Debug::println("Failed to parse message code: " + line,debug_type::WARNING);
+			continue;
+		}
+
+		switch (code){
+			
+			case SYSTEM_MESSAGE:
+				Debug::println("module tried to send sstem message:\"" + line + "\". Blocking off" ,debug_type::ERROR);
+			case SYSTEM_COMMAND:
+				Debug::println("module sent system command: " + line,debug_type::WARNING);
+			case USER_MESSAGE:
+			case USER_COMMAND:
+			
+				// Relay message to submodules
+				for(Module* m : this->modules){
+					m->input << line;
+				}
+				break;
+			default:
+				Debug::println("Received invalid message code: " + std::to_string(code),debug_type::WARNING);
+			break;
+		}
+	}
+
+	return;
 }
 
 void Core::shutdown(){

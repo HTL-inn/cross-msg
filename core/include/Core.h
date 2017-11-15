@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "Module.h"
 
@@ -64,6 +65,10 @@ private:
 
   void shutdown();
 
+  void distributor();
+  std::stringstream dist_stream;
+
 };
 
 #endif /* CORE_H */
+
