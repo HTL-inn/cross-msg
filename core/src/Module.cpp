@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <thread>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <string.h>
 
 #include "Module.h"
 #include "Debug.h"
@@ -167,11 +168,13 @@ void Module::handle(){
 	
   std::string mod_name = this->config["title"];
 
-  for(int i = 0; ((i < 500) && Tools::check_for_file(this->socket_path));i++){
+  for(int i = 0; ((i < 500) && !Tools::check_for_file(this->socket_path));i++){
     Tools::wait_milliseconds(100);
     // 50 seconds enough to open a socket?
   }
-
+  
+  std::cout << "socket found" << Tools::check_for_file(this->socket_path) << std::endl;
+  Tools::wait_milliseconds(1000);
     // Open Socket and initialize module by writing it's config
 
   if ( (this->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
@@ -180,18 +183,21 @@ void Module::handle(){
   }
 
   struct sockaddr_un addr;
-  memset(&addr, 0, sizeof(addr));
+  // memset(&addr, 0, sizeof(&addr));
 
   addr.sun_family = AF_UNIX;
-  if(true){
-	
-  }
 
+  //memcpy(&addr.sun_path, this->socket_path.c_str(),sizeof(this->socket_path.c_str()));
+  strcpy(addr.sun_path, this->socket_path.c_str());
+  std::cout << addr.sun_path << std::endl;
+  std::cout << connect(this->sockfd,(const sockaddr*) &addr, sizeof(addr)) << std::endl;
+  
   Debug::println("module entering regular operation --> " + mod_name,debug_type::INTERNAL);
-  std::thread tmpthr(&Module::listen,this);
+  //this->listen();
+  std::thread tmpthr(&Module::listener,this);
   tmpthr.detach();
 
-  while((kill(this->child, 0) == 0) this-> /*&& !this->core->get_status().shutting_down*/){
+  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
     // Handle input from the unix socket... I should start to implement things..
 	
   }
@@ -200,19 +206,18 @@ void Module::handle(){
 
 }
 
-void Module::listen(){
-
+void Module::listener(){
   std::string mod_name = this->config["title"];
   Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
 
-  char buf;
+  char buf[1000];
   std::string buffer;
   int rc;
   std::stringstream streeeeeaaam;
 
-  while((kill(this->child, 0) == 0) && (rc=ead(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
+  while((kill(this->child, 0) == 0) && (rc=read(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
       // Handle input from the unix socket...
-      *this->output << buf;
+      //*this->output << buf;
       std::cout << buf;
   }
 

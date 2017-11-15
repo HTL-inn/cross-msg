@@ -51,7 +51,8 @@ void unix_socket_create(){
         int sock_listen = listen(socket_main, 1);
 
         /*wait for client*/
-        client_sock = accept(socket_main, nullptr, nullptr);        
+        client_sock = accept(socket_main, nullptr, nullptr);
+	puts("client connected");        
 }
 
 
@@ -101,7 +102,7 @@ int main(int argc, char* argv[]) {
         }
 
         unix_socket_create();
-        unix_socket_write("Mamma hab mich lieb!\n\r");
+        unix_socket_write("Mamma hab mich lieb!\n\r\u0004");
         unix_com_handle();
         unix_socket_close();
         unix_socket_write("Test\n\r");

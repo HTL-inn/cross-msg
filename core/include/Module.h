@@ -40,7 +40,7 @@ public:
 private:
 
   void handle();
-  void listen();
+  void listener();
 
   nlohmann::json config;
   // The socket path is NOT the socket directory! It is the socket itself!
