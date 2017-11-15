@@ -99,13 +99,9 @@ int main(int argc, char* argv[]) {
         }
 
         unix_socket_create();
-<<<<<<< HEAD
         unix_socket_write("Mamma hab mich lieb!\n\r");
         unix_com_handle();
         unix_socket_close();
-=======
         unix_socket_write("Test\n\r");
-        //unix_socket_close();
->>>>>>> refs/remotes/origin/master
    return 0;
 }
