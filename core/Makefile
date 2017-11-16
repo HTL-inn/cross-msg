@@ -19,13 +19,13 @@ BUILDDIR = build/
 SOURCEDIR = src/
 
 # File names
-EXEC = core
+EXEC = $(BUILDDIR)core
 SOURCES = $(wildcard $(SOURCEDIR)*.cpp)
 OBJECTS_TMP = $(SOURCES:.cpp=.o)
 OBJECTS = $(OBJECTS_TMP:$(SOURCEDIR)%=$(BUILDDIR)%)
 
-%.cpp %.o:
-	$(CCC) -c $(@:$(BUILDDIR)%.o=$(SOURCEDIR)%.cpp) $(CC_FLAGS) -o $@
+$(BUILDDIR)%.o: $(SOURCEDIR)%.cpp
+	$(CCC) -c $< $(CC_FLAGS) -o $@
 
 
 # Main target
@@ -37,3 +37,4 @@ $(EXEC): $(OBJECTS)
 # To remove generated files
 clean:
 	rm -f $(EXEC) $(OBJECTS)
+
