@@ -3,4 +3,4 @@
 make clean
 make
 echo ""
-./core -D 0
+./build/core -D 0

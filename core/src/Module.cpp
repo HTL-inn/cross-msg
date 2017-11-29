@@ -34,13 +34,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Module.h"
 #include "Debug.h"
 #include "Tools.h"
+#include "data.h"
 
 Module::Module(nlohmann::json config, std::string socket_dir, std::stringstream* out){
-  this->config = config;
-  this->output = out;
-  std::string mod_name = this->config["title"];
+	this->config = config;
+	this->output = out;
+	std::string mod_name = this->config["title"];
 
-  try{
+	try{
     std::string sockn;
     sockn = this->config["socket"];
     this->socket_path = socket_dir + sockn;
@@ -196,6 +197,14 @@ void Module::handle(){
   //this->listen();
   std::thread tmpthr(&Module::listener,this);
   tmpthr.detach();
+	
+  Tools::wait_milliseconds(100);
+  char buffcc[] = "Hello world\n\r\u001f";
+  write(this->sockfd,buffcc,sizeof(buffcc));
+  for(nlohmann::json::iterator it = this->config.begin();it != this->config.end(); it++){
+	  std::cout << it.value() << " value" << std::endl;
+		//write(this->sockfd, &line, sizeof(line));
+  }
 
   while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
     // Handle input from the unix socket... I should start to implement things..
@@ -210,15 +219,21 @@ void Module::listener(){
   std::string mod_name = this->config["title"];
   Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
 
-  char buf[1000];
+  char buf[1];
   std::string buffer;
   int rc;
-  std::stringstream streeeeeaaam;
 
-  while((kill(this->child, 0) == 0) && (rc=read(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
+	while((kill(this->child, 0) == 0) && (rc=read(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
       // Handle input from the unix socket...
       //*this->output << buf;
-      std::cout << buf;
+		buffer.append(buf);
+		std::cout << buf << std::endl;
+
+		if( *buf == DATA_SEPARATOR) {
+			*this->output << buf;
+			buffer = "";
+		}
+      
   }
 
   Debug::println("listener stopped --> " + mod_name,debug_type::INTERNAL);

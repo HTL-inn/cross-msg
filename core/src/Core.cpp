@@ -227,7 +227,7 @@ Report bugs to tyrolyean@gmx.at" << std::endl;
     std::string mod_name = module["title"];
     Debug::println( "initializing module --> " + mod_name, debug_type::INTERNAL);
 
-    Module* mod = new Module(module,this->socket_dir,&this->dist_stream);
+    Module* mod = new Module(module["config"],this->socket_dir,&this->dist_stream);
 
     this->modules.push_back(mod);
 
@@ -274,6 +274,8 @@ void Core::distributor(){
 
 	while(!this->shutting_down && getline(this->dist_stream ,line ,LINE_SEPARATOR)){
 		std::vector<std::string> splitted = Tools::split_by_string(DATA_SEPARATOR,line);
+		
+		std::cout << line << std::endl;
 		int code = 0;
 		try{
 			code = std::stoi(splitted[0]);
