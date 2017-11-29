@@ -75,13 +75,23 @@ void IRC_RX::unix_write(const char message[]){
 }
 
 
+
 void IRC_RX::unix_handle(){
         char buf[64];
         int size;
+        bool config = false;
         while(size = read(client_sock, &buf, sizeof(buf))){
                 std::cout << buf;
 
-                
+                if(config == false){
+                        std::string s = buf;
+                        std::string delimiter = "\u001f";
+                        std::string mode = s.substr(0, s.find(delimiter));
+                        std::string addr = s.substr(1, s.find(delimiter));
+                        std::cout << mode;
+                        std::cout << addr;
+                        config = true;
+                }
                 
                 bzero(&buf, sizeof(buf));
         }
