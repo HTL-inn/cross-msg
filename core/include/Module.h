@@ -30,25 +30,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Module{
 public:
-  Module(nlohmann::json config, std::string socket_dir, std::stringstream* out);
+	Module(nlohmann::json config, std::string socket_dir, std::stringstream* out);
 
-  void start();
-  void stop();
+	void start();
+	void stop();
 
-  std::stringstream input;
-  std::stringstream* output;
+	std::stringstream input;
+	std::stringstream* output;
+	std::string get_socket_path();
 private:
 
-  void handle();
-  void listener();
+	void handle();
+	void listener();
 
-  nlohmann::json config;
-  // The socket path is NOT the socket directory! It is the socket itself!
-  std::string socket_path;
+	nlohmann::json config;
+	// The socket path is NOT the socket directory! It is the socket itself!
+	std::string socket_path;
 
-  pid_t child;
-  int sockfd;
-  bool started;
+	pid_t child;
+	int sockfd;
+	bool started;
 
 };
 

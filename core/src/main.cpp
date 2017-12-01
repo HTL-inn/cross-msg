@@ -33,59 +33,59 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-  Core c(argc,argv);
+	Core c(argc,argv);
 
-  if(!c.startup()){
-    Debug::println("startup failed! stopping program!",debug_type::CRITICAL_ERROR);
-    return 1;
+	if(!c.startup()){
+	Debug::println("startup failed! stopping program!",debug_type::CRITICAL_ERROR);
+	return 1;
 
-  }else{
-    Debug::println("Startup finished! going on with regular business",debug_type::INFO);
+	}else{
+		Debug::println("Startup finished! going on with regular business",debug_type::INFO);
 
-  }
+	}
 
-  Debug::println("main going to sleep",debug_type::INTERNAL);
+	Debug::println("main going to sleep",debug_type::INTERNAL);
 
-  c.wait_for_shutdown();
+	c.wait_for_shutdown();
 
-  Debug::println("main woken up from sleep",debug_type::INTERNAL);
+	Debug::println("main woken up from sleep",debug_type::INTERNAL);
 
-  int exit_code = c.get_status().exit_code;
-  int i;
+	int exit_code = c.get_status().exit_code;
+	int i;
 
-  if(exit_code == SIGKILL || exit_code == SIGTERM){
-    // Hurry up you lazy bastard!
-      i = 2;
-  }else{
-    // Give the server more shutdown time if it wasn't terminated via a
-    // more important system call
-      i = 10;
-  }
-  Tools::wait_milliseconds(10);
+	if(exit_code == SIGKILL || exit_code == SIGTERM){
+		// Hurry up you lazy bastard!
+		i = 2;
+	}else{
+		// Give the server more shutdown time if it wasn't terminated via a
+		// more important system call
+		i = 10;
+	}
+	Tools::wait_milliseconds(10);
 
-  // maybe? please?
-  if(c.get_status().shut_down){
-    i = 0;
-  }
+	// maybe? please?
+	if(c.get_status().shut_down){
+		i = 0;
+	}
 
-  for(; i > 0; i--){
-      Debug::println("enforced process termination in "+std::to_string(i)+"s!",debug_type::INTERNAL);
+	for(; i > 0; i--){
+		Debug::println("enforced process termination in "+std::to_string(i)+"s!",debug_type::INTERNAL);
 
-      for(int j = 0; j < 1000; j++){
-        if(c.get_status().shut_down){
-          i = 0;
-          continue;
-        }
+		for(int j = 0; j < 1000; j++){
+			if(c.get_status().shut_down){
+				i = 0;
+				continue;
+			}
 
-        Tools::wait_milliseconds(1); // 1 millisecond delay
+			 Tools::wait_milliseconds(1); // 1 millisecond delay
 
-      }
+		}
 
 
-  }
+	}
 
-  Debug::println("bb",debug_type::INTERNAL);
+	Debug::println("bb",debug_type::INTERNAL);
 
-  return exit_code;
+	return exit_code;
 
 }

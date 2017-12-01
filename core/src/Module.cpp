@@ -42,201 +42,224 @@ Module::Module(nlohmann::json config, std::string socket_dir, std::stringstream*
 	std::string mod_name = this->config["title"];
 
 	try{
-    std::string sockn;
-    sockn = this->config["socket"];
-    this->socket_path = socket_dir + sockn;
-  }catch(std::exception& e){
-    this->socket_path = "";
-    Debug::println("Failed to initialize module due to missing config entry socket --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
-    return;
-  }
+		std::string sockn;
+		sockn = this->config["socket"];
+		this->socket_path = socket_dir + sockn;
+	}catch(std::exception& e){
+		this->socket_path = "";
+		Debug::println("Failed to initialize module due to missing config entry socket --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
+		return;
+	}
 
-  this->started = false;
+	this->started = false;
 
-  return;
+	return;
 }
 
 void Module::start(){
 
-  std::string mod_name = this->config["title"];
+	std::string mod_name = this->config["title"];
 
-  Debug::println("starting module --> " + mod_name,debug_type::INTERNAL);
+	Debug::println("starting module --> " + mod_name,debug_type::INTERNAL);
 
-  if(std::string(this->socket_path) == "" || this->started){
-    // Illegal state!
-    return;
-  }
+	if(std::string(this->socket_path) == "" || this->started){
+		// Illegal state!
+		return;
+	}
 
-  // start subprocess according to the config
+	// start subprocess according to the config
 
-  this->child = fork();
+	this->child = fork();
 
-  if(this->child == -1){
-    // I am a failure
-    // Hi
-    Debug::println("failed to for process for module --> " + mod_name,debug_type::ERROR);
-    return;
-  }else if(this->child == 0){
-    // I am the child!
-    // Hi
-    // Parse config to arguments
+	if(this->child == -1){
 
-    std::string cmd;
-    try{
-      cmd = this->config["command"];
-    }catch(std::exception& e){
-      Debug::println("Failed to start module due to missing config entry command --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
-      return;
-    }
+		// I am a failure
+		// Hi
+		
+	  	Debug::println("failed to for process for module --> " + mod_name,debug_type::ERROR);
+		return;
+	}else if(this->child == 0){
+		// I am the child!
+		// Hi
+		// Parse config to arguments
 
-    std::vector<std::string> args = Tools::split_by_string(' ',cmd);
+		std::string cmd;
+		try{
+			cmd = this->config["command"];
+		}catch(std::exception& e){
+			Debug::println("Failed to start module due to missing config entry command --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
+			return;
+		}
 
-    // The first one should be
+		std::vector<std::string> args = Tools::split_by_string(' ',cmd);
 
-    args.push_back("-s");
-    args.push_back(this->socket_path);
+		// The first one should be
 
-    char *cmdln[args.size()+1];
+		args.push_back("-s");
+		args.push_back(this->socket_path);
 
-    for(unsigned int i = 0; i < args.size(); i++){
+		char *cmdln[args.size()+1];
 
-      char* tmp = (char*) malloc(args[i].length()+1);
-      bzero(tmp, args[i].length()+1);
-      std::copy(args[i].begin(), args[i].end(), tmp);
-      cmdln[i] = tmp;
+		for(unsigned int i = 0; i < args.size(); i++){
 
-    }
+			char* tmp = (char*) malloc(args[i].length()+1);
+			bzero(tmp, args[i].length()+1);
+			std::copy(args[i].begin(), args[i].end(), tmp);
+			cmdln[i] = tmp;
+
+		}
 
 
-    cmdln[args.size()] = NULL;
+		cmdln[args.size()] = NULL;
 
-    int n;
+		int n;
 
-    try{
-      // Handing over to subprocess
+		try{
+			// Handing over to subprocess
 
-      n = execvp(cmdln[0], (char* const*) &cmdln);
-    }catch(std::exception& e){
-      Debug::println("Failed to start module with command --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
-    }
+			n = execvp(cmdln[0], (char* const*) &cmdln);
+		}catch(std::exception& e){
+			Debug::println("Failed to start module with command --> " + mod_name + " " + Tools::from_c_str(e.what()), debug_type::CRITICAL_ERROR);
+		}
 
-    this->started = false;
-    Debug::println("child process ended with code "+std::to_string(n)+" --> " + mod_name, debug_type::INTERNAL);
+		this->started = false;
+		Debug::println("child process ended with code "+std::to_string(n)+" --> " + mod_name, debug_type::INTERNAL);
 
-    exit(0);
+		exit(0);
 
-  }else{
-    // I am a parent
-    // Hi
+	}else{
+		// I am a parent
+		// Hi
 
-    this->started = true;
+		this->started = true;
 
-    // Start looping around
-    std::thread tmp(&Module::handle, this);
-    tmp.detach();
-    Debug::println("master handing over to new thread --> " + mod_name,debug_type::INTERNAL);
+		// Start looping around
+		std::thread tmp(&Module::handle, this);
+		tmp.detach();
+		Debug::println("master handing over to new thread --> " + mod_name,debug_type::INTERNAL);
 
-  }
+	}
 
-  return;
+	return;
 }
 
 void Module::stop(){
 
-  std::string mod_name = this->config["title"];
-  Debug::println("stopping module --> " + mod_name,debug_type::INTERNAL);
-  kill(this->child, SIGTERM);
-  Tools::wait_milliseconds(10);
+	std::string mod_name = this->config["title"];
+	Debug::println("stopping module --> " + mod_name,debug_type::INTERNAL);
+	kill(this->child, SIGTERM);
+	Tools::wait_milliseconds(10);
 
-  for(int i = 0; !((i > 6) || kill(this->child, 0) == 0); i++ ){
+	for(int i = 0; !((i > 6) || kill(this->child, 0) == 0); i++ ){
 
-    kill(this->child, SIGTERM);
+		kill(this->child, SIGTERM);
 
-    Tools::wait_milliseconds(100);
+		Tools::wait_milliseconds(100);
 
-  }
+	}
 
-  if(kill(this->child, 0) != 0){
-    Debug::println("too slow at stopping module, forceing child shutdown --> " + mod_name,debug_type::INTERNAL);
-  }
+	if(kill(this->child, 0) != 0){
+		Debug::println("too slow at stopping module, forceing child shutdown --> " + mod_name,debug_type::INTERNAL);
+	}
 
-  kill(this->child, SIGKILL);
+	kill(this->child, SIGKILL);
 
-  return;
+	return;
+}
+
+std::string Module::get_socket_path(){
+	
+	return this->socket_path;
 }
 
 void Module::handle(){
 	
-  std::string mod_name = this->config["title"];
+	std::string mod_name = this->config["title"];
 
-  for(int i = 0; ((i < 500) && !Tools::check_for_file(this->socket_path));i++){
-    Tools::wait_milliseconds(100);
-    // 50 seconds enough to open a socket?
-  }
+	for(int i = 0; ((i < 500) && !Tools::check_for_file(this->socket_path));i++){
+		Tools::wait_milliseconds(100);
+		// 50 seconds enough to open a socket?
+	}
   
-  std::cout << "socket found" << Tools::check_for_file(this->socket_path) << std::endl;
-  Tools::wait_milliseconds(1000);
-    // Open Socket and initialize module by writing it's config
+	std::cout << "socket found" << Tools::check_for_file(this->socket_path) << std::endl;
+	Tools::wait_milliseconds(1000);
+	// Open Socket and initialize module by writing it's config
 
-  if ( (this->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-    Debug::println("failed to get socket --> " + mod_name, debug_type::ERROR);
-    this->stop();
-  }
+	if ( (this->sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+		Debug::println("failed to get socket --> " + mod_name, debug_type::ERROR);
+		this->stop();
+	}
 
-  struct sockaddr_un addr;
-  // memset(&addr, 0, sizeof(&addr));
+	struct sockaddr_un addr;
+	// memset(&addr, 0, sizeof(&addr));
 
-  addr.sun_family = AF_UNIX;
+	addr.sun_family = AF_UNIX;
 
-  //memcpy(&addr.sun_path, this->socket_path.c_str(),sizeof(this->socket_path.c_str()));
-  strcpy(addr.sun_path, this->socket_path.c_str());
-  std::cout << addr.sun_path << std::endl;
-  std::cout << connect(this->sockfd,(const sockaddr*) &addr, sizeof(addr)) << std::endl;
+	//memcpy(&addr.sun_path, this->socket_path.c_str(),sizeof(this->socket_path.c_str()));
+	strcpy(addr.sun_path, this->socket_path.c_str());
+	std::cout << addr.sun_path << std::endl;
+	std::cout << connect(this->sockfd,(const sockaddr*) &addr, sizeof(addr)) << std::endl;
   
-  Debug::println("module entering regular operation --> " + mod_name,debug_type::INTERNAL);
-  //this->listen();
-  std::thread tmpthr(&Module::listener,this);
-  tmpthr.detach();
-	
-  Tools::wait_milliseconds(100);
-  char buffcc[] = "Hello world\n\r\u001f";
-  write(this->sockfd,buffcc,sizeof(buffcc));
-  for(nlohmann::json::iterator it = this->config.begin();it != this->config.end(); it++){
-	  std::cout << it.value() << " value" << std::endl;
-		//write(this->sockfd, &line, sizeof(line));
-  }
+	Debug::println("module entering regular operation --> " + mod_name,debug_type::INTERNAL);
+	//this->listen();
+	std::thread tmpthr(&Module::listener,this);
+	tmpthr.detach();
+	Tools::wait_milliseconds(100);
+	char ehlo[] = "ehlo telegram\0";
+	write(this->sockfd, ehlo,  sizeof(ehlo));
 
-  while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
-    // Handle input from the unix socket... I should start to implement things..
-	
-  }
+	nlohmann::json module_conf = this->config["config"];
+	for(nlohmann::json::iterator it = module_conf.begin();it != module_conf.end(); it++){
+		//std::cout << it.value() << " value" << std::endl;
+		//std::cout << it.key() << " key" << std::endl;
+		std::string line;
+		line += '0';
+		line += DATA_SEPARATOR;
+		line.append(it.key());
+		line += DATA_SEPARATOR;
+		line.append(it.value());
+		line += LINE_SEPARATOR;
+		std::cout << line << std::endl;
+		
+		write(this->sockfd, line.c_str(), line.length());
+	}
 
-  Debug::println("Module leaving regular operation --> " + mod_name,debug_type::INTERNAL);
+	while((kill(this->child, 0) == 0) /*&& !this->core->get_status().shutting_down*/){
+		// Handle input from the unix socket... I should start to implement things..
+	
+	}
+
+	Debug::println("Module leaving regular operation --> " + mod_name,debug_type::INTERNAL);
+	
+	Tools::wait_milliseconds(100);
+	remove(this->socket_path.c_str());
+
+	return;
 
 }
 
 void Module::listener(){
-  std::string mod_name = this->config["title"];
-  Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
+	std::string mod_name = this->config["title"];
+	Debug::println("listener started --> " + mod_name,debug_type::INTERNAL);
 
-  char buf[1];
-  std::string buffer;
-  int rc;
+	char buf;
+	std::string buffer;
+	int rc;
 
 	while((kill(this->child, 0) == 0) && (rc=read(this->sockfd,&buf,sizeof(buf) > 0))  /*&& !this->core->get_status().shutting_down*/){
-      // Handle input from the unix socket...
-      //*this->output << buf;
-		buffer.append(buf);
+	// Handle input from the unix socket...
+	//*this->output << buf;
+		buffer += buf;
 		std::cout << buf << std::endl;
 
-		if( *buf == DATA_SEPARATOR) {
-			*this->output << buf;
+		if( buf == LINE_SEPARATOR) {
+			*this->output << buffer;
 			buffer = "";
 		}
-      
-  }
+     
+	}
 
-  Debug::println("listener stopped --> " + mod_name,debug_type::INTERNAL);
-  return;
+	Debug::println("listener stopped --> " + mod_name,debug_type::INTERNAL);
+	return;
 }
 

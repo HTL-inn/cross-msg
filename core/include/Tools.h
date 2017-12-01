@@ -29,22 +29,22 @@
 #include <vector>
 
 class Tools {
-public:
+	public:
 
-    static std::string get_time_printable();
-    static std::string from_c_str(const char* input);
-    static std::string* rtrim(std::string *s);
-    static std::string int_to_hex_str(long int number);
-    static bool append_to_file(std::string file, std::string line);
-    static bool overwrite_file(std::string file, std::string line);
-    static std::string read_file(std::string file);
-    static bool check_for_directory(std::string dir);
-    static bool check_for_file(const std::string& file);
-    static void wait_milliseconds(int milliseconds);
-    static long long int get_unix_time_millis();
-    static std::string to_upper_case(std::string in);
-    static std::string to_lower_case(std::string in);
-    static std::vector<std::string> split_by_string(char delimiter, std::string input);
+		static std::string get_time_printable();
+		static std::string from_c_str(const char* input);
+		static std::string* rtrim(std::string *s);
+		static std::string int_to_hex_str(long int number);
+		static bool append_to_file(std::string file, std::string line);
+		static bool overwrite_file(std::string file, std::string line);
+		static std::string read_file(std::string file);
+		static bool check_for_directory(std::string dir);
+		static bool check_for_file(const std::string& file);
+		static void wait_milliseconds(int milliseconds);
+		static long long int get_unix_time_millis();
+		static std::string to_upper_case(std::string in);
+		static std::string to_lower_case(std::string in);
+		static std::vector<std::string> split_by_string(char delimiter, std::string input);
 
 };
 

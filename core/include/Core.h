@@ -28,45 +28,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Module.h"
 
 struct core_status{
-  int exit_code;
-  bool shutting_down;
-  bool shut_down;
-  long long int uptime;
+	int exit_code;
+	bool shutting_down;
+	bool shut_down;
+	long long int uptime;
 };
 
 class Core{
 
 public:
-  Core(int argc, char** argv);
-  Core();
+	Core(int argc, char** argv);
+	Core();
 
-  bool startup();
-  core_status get_status();
-  void wait_for_shutdown();
-  void async_shutdown(int code);
+	bool startup();
+	core_status get_status();
+	void wait_for_shutdown();
+	void async_shutdown(int code);
 
 private:
-  int argc;
-  char** argv;
+	int argc;
+	char** argv;
 
-  int exit_code;
-  bool shutting_down;
-  bool shut_down;
-  long long int startup_time;
+	int exit_code;
+	bool shutting_down;
+	bool shut_down;
+	long long int startup_time;
 
-  std::vector<Module*> modules;
-  std::string socket_dir;
+	std::vector<Module*> modules;
+	std::string socket_dir;
 
-  static void signal_handler(int signal);
-  static std::vector<Core*> cores;
+	static void signal_handler(int signal);
+	static std::vector<Core*> cores;
 
-  bool daemon;
-  std::string config_file;
+	bool daemon;
+	std::string config_file;
 
-  void shutdown();
+	void shutdown();
 
-  void distributor();
-  std::stringstream dist_stream;
+	void distributor();
+	std::stringstream dist_stream;
 
 };
 

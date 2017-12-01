@@ -29,15 +29,15 @@
 #include <iostream>
 
 class Debug {
-public:
-    static void println(std::string output, unsigned short int code);
-    // i'm setting this as a global variable because i don't care enough
-    static unsigned short int debug_threshold;
+	public:
+		static void println(std::string output, unsigned short int code);
+		// i'm setting this as a global variable because i don't care enough
+		static unsigned short int debug_threshold;
 
-private:
-    static bool output_lock;
-    static std::string generate_prefix(unsigned short int code);
-    static void output(std::string output);
+	private:
+		static bool output_lock;
+		static std::string generate_prefix(unsigned short int code);
+		static void output(std::string output);
 
 };
 

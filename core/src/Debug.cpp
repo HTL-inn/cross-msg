@@ -40,63 +40,63 @@ unsigned short int Debug::debug_threshold = debug_type::INFO;
 
 void Debug::println(std::string output, unsigned short int code){
 
-    if(code < debug_threshold){
-      // Ignore everything under the threshold
-      return;
-    }
-    std::string out = generate_prefix(code);
-    out.append(output);
-    Debug::output(out);
-    return;
+	if(code < debug_threshold){
+		// Ignore everything under the threshold
+		return;
+	}
+	std::string out = generate_prefix(code);
+	out.append(output);
+	Debug::output(out);
+	return;
 }
 
 
 
 std::string Debug::generate_prefix(unsigned short int code){
 
-    std::string prefix ="[ "+Tools::get_time_printable()+" ";
+	std::string prefix ="[ "+Tools::get_time_printable()+" ";
 
-    switch(code){
+	switch(code){
 
-        case debug_type::INTERNAL :
-            prefix = prefix + COLOR_BLUE +"internal\t    "+COLOR_RESET+"] ";
-            break;
+		case debug_type::INTERNAL :
+			prefix = prefix + COLOR_BLUE +"internal\t    "+COLOR_RESET+"] ";
+			break;
 
-        case debug_type::INFO :
-            prefix = prefix + COLOR_GREEN +"information\t    "+COLOR_RESET+"] ";
-            break;
-        case debug_type::WARNING :
-            prefix = prefix + COLOR_YELLOW +"warning\t    "+COLOR_RESET+"] ";
-            break;
-        case debug_type::ERROR :
-            prefix = prefix + COLOR_RED +"error\t\t    "+COLOR_RESET+"] ";
-            break;
-        case debug_type::CRITICAL_ERROR :
-            prefix = prefix + COLOR_BOLDRED +"critical error     "+COLOR_RESET+"] ";
-            break;
-        case debug_type::END_CALL :
-            prefix = prefix + COLOR_BOLDBLUE +"end call\t    "+COLOR_RESET+"] ";
-            break;
-        case debug_type::PENETRATION :
-            prefix = prefix + COLOR_BOLDBLACK +"penetration   "+COLOR_RESET+"] ";
-            break;
-        default: // I'm probably going to face idiotic programmers.
-            prefix = prefix + COLOR_MAGENTA + "unknown\t    " + COLOR_RESET + "] ";
-            break;
-    }
+		case debug_type::INFO :
+			prefix = prefix + COLOR_GREEN +"information\t    "+COLOR_RESET+"] ";
+			break;
+		case debug_type::WARNING :
+			prefix = prefix + COLOR_YELLOW +"warning\t    "+COLOR_RESET+"] ";
+			break;
+		case debug_type::ERROR :
+			prefix = prefix + COLOR_RED +"error\t\t    "+COLOR_RESET+"] ";
+			break;
+		case debug_type::CRITICAL_ERROR :
+			prefix = prefix + COLOR_BOLDRED +"critical error     "+COLOR_RESET+"] ";
+			break;
+		case debug_type::END_CALL :
+			prefix = prefix + COLOR_BOLDBLUE +"end call\t    "+COLOR_RESET+"] ";
+			break;
+		case debug_type::PENETRATION :
+			prefix = prefix + COLOR_BOLDBLACK +"penetration   "+COLOR_RESET+"] ";
+			break;
+		default: // I'm probably going to face idiotic programmers.
+			prefix = prefix + COLOR_MAGENTA + "unknown\t    " + COLOR_RESET + "] ";
+			break;
+	}
 
-    return prefix;
+	return prefix;
 }
 
 void Debug::output(std::string output){
 
-    while(output_lock){
-        Tools::wait_milliseconds(10);
-    } // Just to be safe :D
-    output_lock = true;
+	while(output_lock){
+		Tools::wait_milliseconds(10);
+	} // Just to be safe :D
+	output_lock = true;
 
-    std::cout << output.c_str() << std::endl;
+	std::cout << output.c_str() << std::endl;
 
-    output_lock = false;
-    return;
+	output_lock = false;
+	return;
 }
