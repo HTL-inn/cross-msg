@@ -205,8 +205,6 @@ void Module::handle(){
 	std::thread tmpthr(&Module::listener,this);
 	tmpthr.detach();
 	Tools::wait_milliseconds(100);
-	char ehlo[] = "ehlo telegram\0";
-	write(this->sockfd, ehlo,  sizeof(ehlo));
 
 	nlohmann::json module_conf = this->config["config"];
 	for(nlohmann::json::iterator it = module_conf.begin();it != module_conf.end(); it++){
