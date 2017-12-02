@@ -1,0 +1,9 @@
+{
+	"socketdir" : "/tmp/cross-msg/",
+	"modules" : [
+	{"title"   : "Telegram",
+     "socket"  : "telegram",
+     "command" : "/home/tyrolyean/projects/cross-msg/irc/irc",
+     "config"  : {"server" : "irc.freenode.net", "port" : "6667"} }
+	]
+}
